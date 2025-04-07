@@ -23,6 +23,33 @@ const MouseEffect: React.FC = () => {
   const outerCursorRef = useRef<HTMLDivElement>(null);
   const innerCursorRef = useRef<HTMLDivElement>(null);
   
+  // Create new particle
+  const createParticle = useCallback((x: number, y: number, speed: number) => {
+    const size = Math.random() * (isClicked ? 40 : 30) + 5;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const particleSpeed = Math.random() * 2 + (speed / 10);
+    const lifetime = Math.random() * 1000 + 1000;
+    
+    const newParticle: ParticleProps = {
+      x,
+      y,
+      size,
+      color,
+      speed: particleSpeed,
+      lifetime,
+      id: `p-${particleCount.current++}`,
+    };
+    
+    setParticles(prevParticles => [...prevParticles, newParticle]);
+    
+    // Clean up particle after its lifetime
+    setTimeout(() => {
+      setParticles(prevParticles => 
+        prevParticles.filter(particle => particle.id !== newParticle.id)
+      );
+    }, lifetime);
+  }, [isClicked]);
+  
   // Handle mouse movement
   const handleMouseMove = useCallback((e: MouseEvent) => {
     const { clientX, clientY } = e;
@@ -63,7 +90,7 @@ const MouseEffect: React.FC = () => {
     } else if (!element?.classList.contains('hoverable') && hoverElements.length > 0) {
       setHoverElements([]);
     }
-  }, [isClicked, hoverElements]);
+  }, [isClicked, hoverElements, createParticle]);
   
   // Handle mouse down/up
   const handleMouseDown = useCallback(() => {
@@ -79,7 +106,7 @@ const MouseEffect: React.FC = () => {
     for (let i = 0; i < 15; i++) {
       createParticle(mousePosition.x, mousePosition.y, 10);
     }
-  }, [mousePosition]);
+  }, [mousePosition, createParticle]);
   
   const handleMouseUp = useCallback(() => {
     setIsClicked(false);
@@ -90,33 +117,6 @@ const MouseEffect: React.FC = () => {
       outerCursorRef.current.style.transform = `translate(${mousePosition.x - 20}px, ${mousePosition.y - 20}px) scale(1)`;
     }
   }, [mousePosition]);
-  
-  // Create new particle
-  const createParticle = useCallback((x: number, y: number, speed: number) => {
-    const size = Math.random() * (isClicked ? 40 : 30) + 5;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const particleSpeed = Math.random() * 2 + (speed / 10);
-    const lifetime = Math.random() * 1000 + 1000;
-    
-    const newParticle: ParticleProps = {
-      x,
-      y,
-      size,
-      color,
-      speed: particleSpeed,
-      lifetime,
-      id: `p-${particleCount.current++}`,
-    };
-    
-    setParticles(prevParticles => [...prevParticles, newParticle]);
-    
-    // Clean up particle after its lifetime
-    setTimeout(() => {
-      setParticles(prevParticles => 
-        prevParticles.filter(particle => particle.id !== newParticle.id)
-      );
-    }, lifetime);
-  }, [isClicked]);
   
   // Initialize event listeners
   useEffect(() => {

@@ -74,6 +74,18 @@
 
   body {
     @apply bg-background text-foreground overflow-hidden cursor-none;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+  }
+
+  html, #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
   }
 }
 
@@ -120,6 +132,7 @@
   mix-blend-mode: screen;
   background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
   transform-origin: center center;
+  transition: transform 0.08s ease-out;
 }
 
 .cursor {
@@ -132,7 +145,7 @@
 .cursor-outer {
   width: 40px;
   height: 40px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 2px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   transition: transform 0.15s ease-out;
 }
@@ -151,12 +164,13 @@
 }
 
 .mouse-area {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100vh;
   overflow: hidden;
+  z-index: 0;
 }
 
 .bg-gradient {
