@@ -1,15 +1,23 @@
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ParticleProps, MousePosition } from "@/types";
 import Particle from "./Particle";
 import { cn } from "@/lib/utils";
 
-const colors = [
+// Enhanced color palette for better visibility in both modes
+const darkModeColors = [
   "rgba(255, 0, 255, 0.8)",  // Magenta
   "rgba(128, 0, 255, 0.8)",  // Purple
   "rgba(0, 128, 255, 0.8)",  // Blue
   "rgba(0, 255, 255, 0.8)",  // Cyan
   "rgba(255, 0, 128, 0.8)",  // Pink
+];
+
+const lightModeColors = [
+  "rgba(128, 0, 255, 0.9)",  // Darker Purple
+  "rgba(75, 0, 130, 0.9)",   // Indigo
+  "rgba(0, 0, 255, 0.9)",    // Blue
+  "rgba(138, 43, 226, 0.9)", // BlueViolet
+  "rgba(186, 85, 211, 0.9)", // MediumOrchid
 ];
 
 const MouseEffect: React.FC = () => {
@@ -40,9 +48,10 @@ const MouseEffect: React.FC = () => {
     return () => observer.disconnect();
   }, []);
   
-  // Create new particle
+  // Create new particle with enhanced colors based on mode
   const createParticle = useCallback((x: number, y: number, speed: number) => {
     const size = Math.random() * (isClicked ? 40 : 30) + 5;
+    const colors = isLightMode ? lightModeColors : darkModeColors;
     const color = colors[Math.floor(Math.random() * colors.length)];
     const particleSpeed = Math.random() * 2 + (speed / 10);
     const lifetime = Math.random() * 1000 + 1000;
@@ -65,7 +74,7 @@ const MouseEffect: React.FC = () => {
         prevParticles.filter(particle => particle.id !== newParticle.id)
       );
     }, lifetime);
-  }, [isClicked]);
+  }, [isClicked, isLightMode]);
   
   // Handle mouse movement
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -148,12 +157,12 @@ const MouseEffect: React.FC = () => {
     };
   }, [handleMouseMove, handleMouseDown, handleMouseUp]);
   
-  // Update background gradient based on mouse position and theme
+  // Update background gradient based on mouse position and theme with enhanced contrast
   const bgGradientStyle = {
     background: isLightMode 
       ? `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
-          hsl(${(mousePosition.x / window.innerWidth) * 60 + 220}, 20%, 95%), 
-          hsl(${(mousePosition.y / window.innerHeight) * 60 + 220}, 20%, 90%) 70%)`
+          hsl(${(mousePosition.x / window.innerWidth) * 60 + 220}, 30%, 92%), 
+          hsl(${(mousePosition.y / window.innerHeight) * 60 + 220}, 30%, 85%) 70%)`
       : `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
           hsl(${(mousePosition.x / window.innerWidth) * 60 + 260}, 50%, 5%), 
           hsl(${(mousePosition.y / window.innerHeight) * 60 + 260}, 50%, 3%) 70%)`,

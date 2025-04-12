@@ -20,6 +20,11 @@ const Particle: React.FC<ParticleProps> = ({
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
   
+  // Check if in light mode
+  const isLightMode = useMemo(() => 
+    document.documentElement.classList.contains('light-mode'), []
+  );
+  
   // Randomly choose a shape for each particle
   const shape = useMemo(() => shapes[Math.floor(Math.random() * shapes.length)], []);
   
@@ -67,7 +72,8 @@ const Particle: React.FC<ParticleProps> = ({
       const elapsedTime = Date.now() - startTime;
       const progress = Math.min(elapsedTime / lifetime, 1);
       
-      setOpacity(1 - progress);
+      // Enhanced opacity for light mode
+      setOpacity(isLightMode ? (1 - progress) * 1.4 : 1 - progress);
       
       // Different animation patterns
       switch(pattern) {
@@ -120,14 +126,16 @@ const Particle: React.FC<ParticleProps> = ({
     return () => {
       cancelAnimationFrame(animationFrame);
     };
-  }, [lifetime, speed, x, y, shape, size]);
+  }, [lifetime, speed, x, y, shape, size, isLightMode]);
   
-  // Additional style variations
+  // Enhanced style variations for better visibility
   const additionalStyles = {
     ...getShapeStyles(),
     transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`,
-    boxShadow: Math.random() > 0.7 ? `0 0 ${size/2}px ${color}` : 'none',
-    filter: Math.random() > 0.5 ? `blur(${size/8}px)` : 'none',
+    boxShadow: Math.random() > 0.5 ? 
+      `0 0 ${size/1.5}px ${color}, 0 0 ${size}px ${color}` : 
+      `0 0 ${size/2}px ${color}`,
+    filter: Math.random() > 0.6 ? `blur(${size/8}px)` : 'none',
   };
   
   return (

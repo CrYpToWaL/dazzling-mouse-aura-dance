@@ -1,13 +1,14 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Copy, Download, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Copy, Download, Loader2, Sparkles, CheckCircle2, Lock } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import CursorPreview from './CursorPreview';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
+// Example prompts for users to try
 const examplePrompts = [
   "A cosmic nebula trail that swirls around the cursor",
   "Neon cyberpunk hexagons that ripple outward",
@@ -16,6 +17,7 @@ const examplePrompts = [
   "Electric lightning bolts that arc between points"
 ];
 
+// Interface for cursor configuration
 interface CursorConfig {
   type: string;
   colors: string[];
@@ -36,7 +38,15 @@ interface CursorConfig {
   interactionType?: string;
 }
 
-const PromptGenerator = () => {
+interface PromptGeneratorProps {
+  isAuthenticated?: boolean;
+  onLogin?: () => void;
+}
+
+const PromptGenerator: React.FC<PromptGeneratorProps> = ({ 
+  isAuthenticated = false, 
+  onLogin = () => {} 
+}) => {
   const [prompt, setPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [cursorCode, setCursorCode] = useState('');
@@ -560,355 +570,4 @@ function createCursorEffect(config) {
         particle.style.width = config.size * 1.5 + 'px';
         particle.style.height = config.size * 1.5 + 'px';
         particle.style.backgroundColor = 'transparent';
-        particle.style.backgroundImage = \`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23\${particleColor.substring(1)}' width='24' height='24'%3E%3Cpath d='M12 0l1.5 4h-3L12 0zm0 24l1.5-4h-3L12 24zm8-12l4 1.5v-3L20 12zm-16 0l-4 1.5v-3L4 12zm2.24-7.76l2.12 5.66-2.12-2.12-2.12 2.12 2.12-5.66zm11.52 15.52l-2.12-5.66 2.12 2.12 2.12-2.12-2.12 5.66zM7.76 19.76l-2.12-5.66 2.12 2.12 2.12-2.12-2.12 5.66zm8.48-15.52l2.12 5.66-2.12-2.12-2.12 2.12 2.12-5.66z'/%3E%3C/svg%3E")\`;
-        particle.style.backgroundSize = 'contain';
-        break;
-        
-      case 'lightning':
-        particle.style.width = config.size * 1.2 + 'px';
-        particle.style.height = config.size * 2 + 'px';
-        particle.style.backgroundColor = 'transparent';
-        particle.style.backgroundImage = \`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23\${particleColor.substring(1)}' width='24' height='24'%3E%3Cpath d='M13 3v10h4l-7 8v-10H6l7-8z'/%3E%3C/svg%3E")\`;
-        particle.style.backgroundSize = 'contain';
-        break;
-        
-      case 'text':
-        particle.style.width = config.size * 1.2 + 'px';
-        particle.style.height = config.size * 1.2 + 'px';
-        particle.style.color = particleColor;
-        particle.style.fontSize = config.size + 'px';
-        particle.style.fontFamily = 'monospace';
-        particle.textContent = Math.random() > 0.5 ? '1' : '0';
-        break;
-        
-      default:
-        particle.style.width = config.size + 'px';
-        particle.style.height = config.size + 'px';
-        particle.style.borderRadius = '50%';
-        particle.style.backgroundColor = particleColor;
-    }
-    
-    // Apply common particle styling and animations
-    particle.style.position = 'absolute';
-    particle.style.left = x + 'px';
-    particle.style.top = y + 'px';
-    particle.style.transform = 'translate(-50%, -50%)';
-    particle.style.pointerEvents = 'none';
-    particle.style.opacity = config.opacity || 0.8;
-    
-    // Apply glow effect if configured
-    if (config.glow) {
-      particle.style.filter = \`blur(\${config.blurAmount || 3}px)\`;
-      particle.style.boxShadow = \`0 0 \${config.size/2}px \${particleColor}\`;
-    }
-    
-    document.body.appendChild(particle);
-    
-    // Movement and animation
-    let particleX = x;
-    let particleY = y;
-    let opacity = config.opacity || 0.8;
-    let scale = 1;
-    let angle = 0;
-    
-    // Initial random directional velocity
-    const spreadFactor = config.spread || 5;
-    const randomAngle = Math.random() * Math.PI * 2;
-    const randomSpeed = (Math.random() * 0.5 + 0.5) * (config.speed || 1);
-    let vx = Math.cos(randomAngle) * randomSpeed * spreadFactor;
-    let vy = Math.sin(randomAngle) * randomSpeed * spreadFactor;
-    
-    // Different movement patterns based on interactionType
-    switch(config.interactionType) {
-      case 'explode':
-        vx = vx * 2;
-        vy = vy * 2;
-        break;
-        
-      case 'rain':
-        vx = (Math.random() - 0.5) * spreadFactor;
-        vy = randomSpeed * spreadFactor;
-        break;
-        
-      case 'swirl':
-        // Will be handled in animation
-        break;
-        
-      case 'orbit':
-        // Will be handled in animation
-        break;
-    }
-    
-    const startTime = Date.now();
-    const lifetime = config.particleLifetime || 800;
-    
-    function animate() {
-      const elapsed = Date.now() - startTime;
-      const progress = Math.min(elapsed / lifetime, 1);
-      
-      // Update opacity based on progress
-      opacity = config.opacity * (1 - progress);
-      
-      // Update scale for some effects
-      if (config.pulseEffect) {
-        scale = 1 + Math.sin(progress * Math.PI * 3) * 0.2;
-      } else {
-        scale = 1 - progress * 0.5;
-      }
-      
-      // Special movement patterns
-      if (config.interactionType === 'swirl') {
-        const swirl = progress * 10;
-        const radius = config.spread * (1 - progress);
-        particleX += Math.cos(swirl) * radius;
-        particleY += Math.sin(swirl) * radius - config.speed;
-      } else if (config.interactionType === 'orbit') {
-        const orbitSpeed = progress * 8;
-        const radius = config.spread;
-        particleX = x + Math.cos(orbitSpeed) * radius;
-        particleY = y + Math.sin(orbitSpeed) * radius;
-      } else if (config.interactionType === 'ripple') {
-        const wave = Math.sin(progress * Math.PI * 3);
-        scale = 1 + wave * 0.3;
-        opacity *= (1 + wave * 0.2);
-        particleX += vx;
-        particleY += vy;
-      } else if (config.interactionType === 'magnetic') {
-        particleX += vx;
-        particleY += vy;
-        vx += (x - particleX) * 0.01;
-        vy += (y - particleY) * 0.01;
-      } else if (config.interactionType === 'dna') {
-        const dnaProgress = progress * 10;
-        const xOffset = Math.sin(dnaProgress) * config.spread;
-        const yOffset = -progress * 50;
-        particleX = x + xOffset;
-        particleY = y + yOffset;
-      } else {
-        // Default movement
-        particleX += vx;
-        particleY += vy;
-        
-        // Optional gravity effect
-        vy += 0.05;
-      }
-      
-      // Optional rotation
-      if (config.rotation) {
-        angle += 3;
-      }
-      
-      // Apply bounce effect if enabled
-      if (config.bounceOffEdges) {
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        
-        if (particleX < 0 || particleX > viewportWidth) {
-          vx = -vx;
-        }
-        
-        if (particleY < 0 || particleY > viewportHeight) {
-          vy = -vy;
-        }
-      }
-      
-      // Update particle position and appearance
-      particle.style.left = particleX + 'px';
-      particle.style.top = particleY + 'px';
-      particle.style.opacity = opacity;
-      
-      // Apply transform for scale and rotation
-      particle.style.transform = \`translate(-50%, -50%) scale(\${scale}) rotate(\${angle}deg)\`;
-      
-      // Remove particle when animation completes
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      } else {
-        particle.remove();
-      }
-    }
-    
-    requestAnimationFrame(animate);
-  }
-  
-  return {
-    destroy: () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      cursor.remove();
-    }
-  };
-}
-`;
-      
-      setCursorCode(codeString);
-      setIsGenerating(false);
-    }, 1000);
-  };
-
-  // Copy cursor code to clipboard
-  const handleCopyCode = () => {
-    if (!cursorCode) return;
-    
-    navigator.clipboard.writeText(cursorCode)
-      .then(() => {
-        toast({
-          title: "Success",
-          description: "Code copied to clipboard",
-        });
-      })
-      .catch(() => {
-        toast({
-          title: "Error",
-          description: "Failed to copy code",
-          variant: "destructive",
-        });
-      });
-  };
-  
-  // Copy prompt to clipboard
-  const handleCopyPrompt = () => {
-    navigator.clipboard.writeText(prompt)
-      .then(() => {
-        setPromptCopied(true);
-        setTimeout(() => setPromptCopied(false), 2000);
-        
-        toast({
-          title: "Success",
-          description: "Prompt copied to clipboard",
-        });
-      })
-      .catch(() => {
-        toast({
-          title: "Error",
-          description: "Failed to copy prompt",
-          variant: "destructive",
-        });
-      });
-  };
-  
-  // Download cursor code as JS file
-  const handleDownload = () => {
-    if (!cursorCode) return;
-    
-    const blob = new Blob([cursorCode], { type: 'text/javascript' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'cursor-effect.js';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    
-    toast({
-      title: "Success",
-      description: "Downloaded as cursor-effect.js",
-    });
-  };
-  
-  // Get a random example prompt
-  const getRandomPrompt = () => {
-    const randomIndex = Math.floor(Math.random() * examplePrompts.length);
-    setPrompt(examplePrompts[randomIndex]);
-  };
-
-  return (
-    <div className="w-full max-w-4xl mx-auto space-y-6 animate-fade-in">
-      <Card className="border border-border bg-card/80 backdrop-blur-sm shadow-lg">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Create Your Cursor Effect</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative">
-            <Textarea 
-              placeholder="Describe your ideal cursor effect... (e.g., 'Neon purple sparks that fade away')"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              className="min-h-[100px] bg-background/40 focus:bg-background/60 transition-all"
-            />
-            <div className="flex justify-end mt-1">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={getRandomPrompt}
-                className="text-xs text-muted-foreground hover:text-foreground"
-              >
-                Try an example
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleCopyPrompt}
-                className="text-xs text-muted-foreground hover:text-foreground"
-                disabled={!prompt}
-              >
-                {promptCopied ? (
-                  <>
-                    <CheckCircle2 className="h-3.5 w-3.5 mr-1" />
-                    <span>Copied</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-3.5 w-3.5 mr-1" />
-                    <span>Copy prompt</span>
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
-            <Button 
-              onClick={handleGenerate} 
-              disabled={isGenerating || !prompt.trim()}
-              className="w-full sm:w-auto"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Generate Effect
-                </>
-              )}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-      
-      {cursorConfig && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 animate-fade-in">
-          <CursorPreview config={cursorConfig} />
-          
-          <Card className="border border-border bg-card/80 backdrop-blur-sm shadow-lg">
-            <CardHeader>
-              <CardTitle className="text-xl font-medium">Generated Code</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="relative">
-                <div className="bg-background/40 p-4 rounded-md font-mono text-xs h-[300px] overflow-auto">
-                  <pre className="text-xs text-gray-200">{cursorCode}</pre>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={handleCopyCode}>
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Code
-              </Button>
-              <Button variant="default" size="sm" onClick={handleDownload}>
-                <Download className="h-4 w-4 mr-2" />
-                Download
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default PromptGenerator;
+        particle.style.backgroundImage = \`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
