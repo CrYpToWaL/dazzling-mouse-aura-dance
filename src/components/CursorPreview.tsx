@@ -58,20 +58,20 @@ const CursorPreview: React.FC<CursorPreviewProps> = ({ config }) => {
   }, [config]);
   
   return (
-    <Card className="border border-border bg-card/80 backdrop-blur-sm w-full">
+    <Card className="border border-border bg-card/80 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-primary/10">
       <CardHeader>
         <CardTitle className="text-xl font-medium">Preview Your Cursor</CardTitle>
       </CardHeader>
       <CardContent>
         <div 
-          className="w-full h-[300px] bg-background/50 rounded-md border border-border relative overflow-hidden"
+          className="w-full h-[300px] bg-background/30 rounded-md border border-border relative overflow-hidden transition-all duration-300 hover:border-primary/40"
           onMouseMove={handleMouseMove}
         >
           {config && (
             <>
               {/* Custom cursor */}
               <div 
-                className="absolute w-8 h-8 rounded-full pointer-events-none z-50"
+                className="absolute w-8 h-8 rounded-full pointer-events-none z-50 animate-pulse"
                 style={{ 
                   left: `${position.x - 16}px`, 
                   top: `${position.y - 16}px`,
@@ -93,7 +93,8 @@ const CursorPreview: React.FC<CursorPreviewProps> = ({ config }) => {
                     backgroundColor: particle.color,
                     opacity: 1 - ((Date.now() - particle.id) / config.fadeTime),
                     transform: `scale(${1 - ((Date.now() - particle.id) / config.fadeTime / 2)})`,
-                    transition: 'opacity 0.1s, transform 0.1s'
+                    transition: 'opacity 0.1s, transform 0.1s',
+                    boxShadow: `0 0 ${config.size * 2}px ${particle.color}`
                   }}
                 />
               ))}
@@ -102,7 +103,7 @@ const CursorPreview: React.FC<CursorPreviewProps> = ({ config }) => {
           
           {!config && (
             <div className="flex items-center justify-center h-full text-gray-400">
-              Generate a cursor to see preview
+              <span className="animate-pulse">Generate a cursor to see preview</span>
             </div>
           )}
         </div>

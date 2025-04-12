@@ -36,34 +36,34 @@
     --radius: 0.5rem;
   }
   
-  .dark {
-    --background: 260 50% 3%;
-    --foreground: 220 40% 98%;
+  .light-mode {
+    --background: 220 20% 97%;
+    --foreground: 220 40% 2%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 280 100% 60%;
+    --primary: 280 100% 50%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 220 100% 70%;
+    --secondary: 220 100% 60%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 210 40% 93%;
+    --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 330 100% 65%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 330 100% 55%;
+    --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
   }
 }
 
@@ -78,6 +78,7 @@
     padding: 0;
     height: 100vh;
     width: 100vw;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   }
 
   html, #root {
@@ -86,6 +87,14 @@
     margin: 0;
     padding: 0;
     overflow: hidden;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+  
+  button, a {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary;
   }
 }
 
@@ -121,6 +130,17 @@
     opacity: 0;
   }
   to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
     opacity: 1;
   }
 }
@@ -181,4 +201,42 @@
     hsl(var(--background)), 
     hsl(260, 50%, 5%) 70%);
   transition: background 1s ease;
+}
+
+.hoverable {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.hoverable:hover {
+  transform: translateY(-2px);
+}
+
+.hoverable::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: hsl(var(--primary));
+  transition: width 0.3s ease;
+}
+
+.hoverable:hover::after {
+  width: 100%;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.light-mode .bg-gradient {
+  background: radial-gradient(circle at center, 
+    hsl(var(--background)), 
+    hsl(220, 20%, 90%) 70%);
 }
