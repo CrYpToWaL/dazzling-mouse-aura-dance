@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -215,7 +216,7 @@
   background: radial-gradient(circle at center, 
     hsl(var(--background)), 
     hsl(260, 50%, 5%) 70%);
-  transition: background 1s ease;
+  transition: all 0.5s ease;
 }
 
 .hoverable {
@@ -250,6 +251,7 @@
   animation: scaleIn 0.3s ease-out forwards;
 }
 
+/* Light mode specific styles */
 .light-mode {
   color-scheme: light;
 }
@@ -259,6 +261,7 @@
   color: hsl(var(--foreground));
 }
 
+.light-mode .text-foreground,
 .light-mode h1,
 .light-mode p,
 .light-mode .text-gray-200,
@@ -367,4 +370,12 @@ button[aria-label="Toggle theme"]:hover {
 
 .light-mode .rounded-md.bg-black\/80 pre {
   color: #333;
+}
+
+/* Fix for title in light mode */
+.light-mode .text-transparent.bg-gradient-to-r {
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
 }

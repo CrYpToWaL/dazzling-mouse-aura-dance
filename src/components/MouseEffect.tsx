@@ -17,11 +17,28 @@ const MouseEffect: React.FC = () => {
   const [isClicked, setIsClicked] = useState(false);
   const [particles, setParticles] = useState<ParticleProps[]>([]);
   const [hoverElements, setHoverElements] = useState<HTMLElement[]>([]);
+  const [isLightMode, setIsLightMode] = useState(false);
   const particleCount = useRef(0);
   const lastEmitTime = useRef(0);
   const prevMousePosition = useRef({ x: 0, y: 0 });
   const outerCursorRef = useRef<HTMLDivElement>(null);
   const innerCursorRef = useRef<HTMLDivElement>(null);
+  
+  // Check if light mode is active
+  useEffect(() => {
+    const checkLightMode = () => {
+      const isLight = document.documentElement.classList.contains('light-mode');
+      setIsLightMode(isLight);
+    };
+    
+    checkLightMode();
+    
+    // Create a mutation observer to watch for class changes on the html element
+    const observer = new MutationObserver(checkLightMode);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    
+    return () => observer.disconnect();
+  }, []);
   
   // Create new particle
   const createParticle = useCallback((x: number, y: number, speed: number) => {
@@ -131,11 +148,15 @@ const MouseEffect: React.FC = () => {
     };
   }, [handleMouseMove, handleMouseDown, handleMouseUp]);
   
-  // Update background gradient based on mouse position
+  // Update background gradient based on mouse position and theme
   const bgGradientStyle = {
-    background: `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
-      hsl(${(mousePosition.x / window.innerWidth) * 60 + 260}, 50%, 5%), 
-      hsl(${(mousePosition.y / window.innerHeight) * 60 + 260}, 50%, 3%) 70%)`,
+    background: isLightMode 
+      ? `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
+          hsl(${(mousePosition.x / window.innerWidth) * 60 + 220}, 20%, 95%), 
+          hsl(${(mousePosition.y / window.innerHeight) * 60 + 220}, 20%, 90%) 70%)`
+      : `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
+          hsl(${(mousePosition.x / window.innerWidth) * 60 + 260}, 50%, 5%), 
+          hsl(${(mousePosition.y / window.innerHeight) * 60 + 260}, 50%, 3%) 70%)`,
   };
   
   return (
