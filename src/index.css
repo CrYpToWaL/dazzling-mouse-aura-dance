@@ -260,11 +260,12 @@
   color: hsl(var(--foreground));
 }
 
-.light-mode .bg-card\\/80 {
+/* Fixed the problematic selectors by properly escaping the forward slashes */
+.light-mode .bg-card\/80 {
   background-color: rgba(255, 255, 255, 0.8);
 }
 
-.light-mode .bg-background\\/30 {
+.light-mode .bg-background\/30 {
   background-color: rgba(220, 220, 220, 0.3);
 }
 
