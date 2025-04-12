@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -570,4 +571,384 @@ function createCursorEffect(config) {
         particle.style.width = config.size * 1.5 + 'px';
         particle.style.height = config.size * 1.5 + 'px';
         particle.style.backgroundColor = 'transparent';
-        particle.style.backgroundImage = \`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
+        particle.style.backgroundImage = \`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23\${particleColor.substring(1)}' width='24' height='24'%3E%3Cpath d='M12 0l1.5 4h-3L12 0zm0 24l1.5-4h-3L12 24zm12-12l-4 1.5v-3L24 12zm-24 0l4-1.5v3L0 12zm20.5-7l-3.5 2.5 1-3.5-2.5-3.5H19l1.5-3.5L22 4h-3.5L16 7.5l1 3.5-3.5-2.5-3.5 2.5 1-3.5L8.5 4H5L6.5.5 8 4h3.5L9 7.5l1 3.5L6.5 8.5 3 11l1-3.5L1.5 4h3.5L6.5.5 5 4H1.5L3 7.5 1 11l3.5-2.5L8 11l-1-3.5L9 4h3.5L11 .5 9.5 4H13l1.5 3.5L16 4h-3.5L11 .5'/%3E%3C/svg%3E")\`;
+        particle.style.backgroundSize = 'contain';
+        break;
+        
+      case 'lightning':
+        particle.style.width = config.size * 1.2 + 'px';
+        particle.style.height = config.size * 1.5 + 'px';
+        particle.style.backgroundColor = 'transparent';
+        particle.style.backgroundImage = \`url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23\${particleColor.substring(1)}' width='24' height='24'%3E%3Cpath d='M13 3v9h8l-14 12v-9h-7l13-12z'/%3E%3C/svg%3E")\`;
+        particle.style.backgroundSize = 'contain';
+        break;
+        
+      case 'text':
+        const chars = ['0', '1'];
+        const char = chars[Math.floor(Math.random() * chars.length)];
+        particle.style.width = config.size + 'px';
+        particle.style.height = config.size + 'px';
+        particle.style.color = particleColor;
+        particle.style.fontFamily = 'monospace';
+        particle.style.fontSize = config.size + 'px';
+        particle.style.display = 'flex';
+        particle.style.alignItems = 'center';
+        particle.style.justifyContent = 'center';
+        particle.innerHTML = char;
+        break;
+    }
+    
+    // Apply glow
+    if (config.glow) {
+      particle.style.boxShadow = \`0 0 \${config.size}px \${particleColor}\`;
+      if (config.blurAmount > 0) {
+        particle.style.filter = \`blur(\${config.blurAmount}px)\`;
+      }
+    }
+    
+    // Apply base position
+    particle.style.position = 'absolute';
+    particle.style.left = x + 'px';
+    particle.style.top = y + 'px';
+    particle.style.transform = \`translate(-50%, -50%)\`;
+    particle.style.opacity = config.opacity || 1;
+    
+    document.body.appendChild(particle);
+    
+    // Animation settings
+    const lifetime = config.particleLifetime || 1000;
+    const startTime = Date.now();
+    
+    // Calculate initial direction
+    let dx = 0, dy = 0;
+    
+    // Different interaction types
+    switch(config.interactionType) {
+      case 'explode':
+        const angle = Math.random() * Math.PI * 2;
+        dx = Math.cos(angle) * config.speed * (Math.random() + 0.5);
+        dy = Math.sin(angle) * config.speed * (Math.random() + 0.5);
+        break;
+        
+      case 'rain':
+        dx = (Math.random() - 0.5) * config.speed;
+        dy = config.speed * 2;
+        break;
+        
+      case 'orbit':
+        // Will be handled in animation
+        break;
+        
+      case 'swirl':
+        // Will be handled in animation
+        break;
+        
+      case 'ripple':
+        // Will be handled in animation
+        break;
+        
+      case 'dna':
+        // Will be handled in animation
+        break;
+        
+      case 'magnetic':
+        dx = (x - prevX) * config.speed * 0.1;
+        dy = (y - prevY) * config.speed * 0.1;
+        break;
+        
+      default: // 'follow'
+        dx = (Math.random() - 0.5) * config.speed * 2;
+        dy = (Math.random() - 0.5) * config.speed * 2;
+        break;
+    }
+    
+    const spread = config.spread || 5;
+    const initialX = x + (Math.random() - 0.5) * spread;
+    const initialY = y + (Math.random() - 0.5) * spread;
+    
+    let currentX = initialX;
+    let currentY = initialY;
+    let rotation = Math.random() * 360;
+    
+    // Animation loop
+    function animate() {
+      const elapsed = Date.now() - startTime;
+      const progress = elapsed / lifetime;
+      
+      if (progress >= 1) {
+        particle.remove();
+        return;
+      }
+      
+      // Different animation patterns based on interaction type
+      switch(config.interactionType) {
+        case 'orbit':
+          const orbitRadius = config.spread * (1 - progress);
+          const orbitSpeed = progress * 10;
+          currentX = x + Math.cos(orbitSpeed) * orbitRadius;
+          currentY = y + Math.sin(orbitSpeed) * orbitRadius;
+          break;
+          
+        case 'swirl':
+          const swirlRadius = config.spread * (1 - progress);
+          const swirlAngle = progress * 15;
+          currentX = initialX + Math.cos(swirlAngle) * swirlRadius;
+          currentY = initialY + Math.sin(swirlAngle) * swirlRadius - progress * 10;
+          break;
+          
+        case 'ripple':
+          const rippleSize = progress * config.spread * 5;
+          currentX = initialX + Math.cos(progress * Math.PI * 4) * rippleSize;
+          currentY = initialY + Math.sin(progress * Math.PI * 4) * rippleSize;
+          break;
+          
+        case 'dna':
+          const dnaRadius = config.spread;
+          const dnaSpeed = progress * 15;
+          const dnaOffset = progress * 30; // Vertical movement
+          const dnaWave = Math.sin(dnaSpeed);
+          
+          if (Math.random() > 0.5) {
+            currentX = x + Math.cos(dnaSpeed) * dnaRadius;
+          } else {
+            currentX = x + Math.cos(dnaSpeed + Math.PI) * dnaRadius;
+          }
+          
+          currentY = initialY - dnaOffset;
+          break;
+          
+        default:
+          currentX += dx;
+          currentY += dy;
+          
+          // Apply gravity or drift if needed
+          dy += 0.05; // Slight gravity effect
+          break;
+      }
+      
+      // Edge bouncing if enabled
+      if (config.bounceOffEdges) {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        
+        if (currentX < 0 || currentX > width) {
+          dx = -dx;
+          currentX = Math.max(0, Math.min(currentX, width));
+        }
+        
+        if (currentY < 0 || currentY > height) {
+          dy = -dy;
+          currentY = Math.max(0, Math.min(currentY, height));
+        }
+      }
+      
+      // Apply rotation if enabled
+      if (config.rotation) {
+        rotation += 2;
+        particle.style.transform = \`translate(-50%, -50%) rotate(\${rotation}deg)\`;
+      }
+      
+      // Apply pulse effect if enabled
+      if (config.pulseEffect) {
+        const pulse = 1 + Math.sin(progress * Math.PI * 4) * 0.2;
+        particle.style.transform = \`translate(-50%, -50%) \${config.rotation ? \`rotate(\${rotation}deg)\` : ''} scale(\${pulse})\`;
+      }
+      
+      // Update position
+      particle.style.left = currentX + 'px';
+      particle.style.top = currentY + 'px';
+      
+      // Fade out
+      particle.style.opacity = (1 - progress) * (config.opacity || 1);
+      
+      requestAnimationFrame(animate);
+    }
+    
+    animate();
+  }
+}
+
+// Initialize the cursor effect
+document.addEventListener('DOMContentLoaded', () => {
+  createCursorEffect(cursorEffect);
+});
+`;
+      
+      setCursorCode(codeString);
+      setIsGenerating(false);
+    }, 1000);
+  };
+
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(prompt);
+    setPromptCopied(true);
+    
+    toast({
+      title: "Prompt copied",
+      description: "Prompt copied to clipboard"
+    });
+    
+    setTimeout(() => {
+      setPromptCopied(false);
+    }, 2000);
+  };
+  
+  const handleCopyCode = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to copy the generated code",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    navigator.clipboard.writeText(cursorCode);
+    
+    toast({
+      title: "Code copied",
+      description: "Code copied to clipboard"
+    });
+  };
+  
+  const handleDownload = () => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Authentication required",
+        description: "Please log in to download the generated code",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    const blob = new Blob([cursorCode], { type: "text/javascript" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "cursor-effect.js";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast({
+      title: "Code downloaded",
+      description: "Your cursor effect code has been downloaded"
+    });
+  };
+  
+  const handleTryExample = () => {
+    const randomExample = examplePrompts[Math.floor(Math.random() * examplePrompts.length)];
+    setPrompt(randomExample);
+  };
+
+  return (
+    <div className="flex flex-col w-full gap-6">
+      <Card className="border border-border bg-card/80 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-primary/10">
+        <CardHeader>
+          <CardTitle className="text-2xl font-medium text-center">Create Your Cursor Effect</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4">
+            <Textarea 
+              placeholder="Describe your ideal cursor effect... (e.g., 'Neon purple sparks that fade away')"
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              className="min-h-[100px] text-center"
+            />
+            
+            <div className="flex justify-end items-center gap-2">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleTryExample}
+                className="text-muted-foreground"
+              >
+                Try an example
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={handleCopyPrompt}
+                className="h-8 w-8"
+                disabled={!prompt || promptCopied}
+              >
+                {promptCopied ? <CheckCircle2 className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter className="flex justify-center">
+          <Button 
+            onClick={handleGenerate} 
+            size="lg"
+            disabled={isGenerating || !prompt.trim()}
+            className="px-8 font-medium"
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="mr-2 h-4 w-4" />
+                Generate Effect
+              </>
+            )}
+          </Button>
+        </CardFooter>
+      </Card>
+
+      {cursorConfig && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <CursorPreview config={cursorConfig} />
+          
+          <Card className="border border-border bg-card/80 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-primary/10 h-[400px]">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle className="text-xl font-medium">Generated Code</CardTitle>
+              
+              <div className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={handleCopyCode}
+                  className="h-8 w-8"
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={handleDownload}
+                  className="h-8 w-8"
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {!isAuthenticated ? (
+                <div className="flex flex-col items-center justify-center h-[300px] bg-background/30 rounded-md border border-border">
+                  <Lock className="h-12 w-12 text-muted-foreground mb-4" />
+                  <p className="text-center text-muted-foreground mb-4">Login required to view and download code</p>
+                  <Button onClick={onLogin}>Login</Button>
+                </div>
+              ) : (
+                <ScrollArea className="h-[300px] w-full bg-background/30 rounded-md border border-border relative">
+                  <pre className="p-4 text-xs text-left overflow-auto">
+                    <code>{cursorCode}</code>
+                  </pre>
+                </ScrollArea>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PromptGenerator;

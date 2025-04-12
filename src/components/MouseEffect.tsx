@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { ParticleProps, MousePosition } from "@/types";
 import Particle from "./Particle";
 import { cn } from "@/lib/utils";
 
-// Enhanced color palette for better visibility in both modes
+// Enhanced color palette with better visibility in both modes
 const darkModeColors = [
   "rgba(255, 0, 255, 0.8)",  // Magenta
   "rgba(128, 0, 255, 0.8)",  // Purple
@@ -12,12 +13,13 @@ const darkModeColors = [
   "rgba(255, 0, 128, 0.8)",  // Pink
 ];
 
+// Higher contrast colors for light mode
 const lightModeColors = [
-  "rgba(128, 0, 255, 0.9)",  // Darker Purple
-  "rgba(75, 0, 130, 0.9)",   // Indigo
-  "rgba(0, 0, 255, 0.9)",    // Blue
-  "rgba(138, 43, 226, 0.9)", // BlueViolet
-  "rgba(186, 85, 211, 0.9)", // MediumOrchid
+  "rgba(128, 0, 255, 0.95)",   // Darker Purple
+  "rgba(75, 0, 130, 0.95)",    // Indigo
+  "rgba(0, 0, 205, 0.95)",     // Medium Blue
+  "rgba(138, 43, 226, 0.95)",  // BlueViolet
+  "rgba(186, 85, 211, 0.95)",  // MediumOrchid
 ];
 
 const MouseEffect: React.FC = () => {
@@ -161,8 +163,8 @@ const MouseEffect: React.FC = () => {
   const bgGradientStyle = {
     background: isLightMode 
       ? `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
-          hsl(${(mousePosition.x / window.innerWidth) * 60 + 220}, 30%, 92%), 
-          hsl(${(mousePosition.y / window.innerHeight) * 60 + 220}, 30%, 85%) 70%)`
+          hsl(${(mousePosition.x / window.innerWidth) * 60 + 220}, 40%, 90%), 
+          hsl(${(mousePosition.y / window.innerHeight) * 60 + 220}, 40%, 82%) 70%)`
       : `radial-gradient(circle at ${mousePosition.x}px ${mousePosition.y}px, 
           hsl(${(mousePosition.x / window.innerWidth) * 60 + 260}, 50%, 5%), 
           hsl(${(mousePosition.y / window.innerHeight) * 60 + 260}, 50%, 3%) 70%)`,

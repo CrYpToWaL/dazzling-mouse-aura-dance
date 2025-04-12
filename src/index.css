@@ -72,15 +72,15 @@
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
 
   body {
-    @apply bg-background text-foreground cursor-none;
+    @apply bg-background text-foreground cursor-none antialiased;
     margin: 0;
     padding: 0;
     font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     text-align: center;
-    overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden;
     height: 100%;
   }
@@ -90,7 +90,6 @@
     width: 100%;
     margin: 0;
     padding: 0;
-    overflow-y: auto; /* Enable vertical scrolling */
     overflow-x: hidden;
     text-align: center;
   }
@@ -103,6 +102,7 @@
   button, a {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary;
     font-family: 'Poppins', sans-serif;
+    cursor: none;
   }
   
   textarea::placeholder {
@@ -116,8 +116,42 @@
   }
 }
 
-/* ... keep existing code (animations keyframes and other animations) */
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Particle Effects */
 .particle {
   pointer-events: none;
   position: absolute;
@@ -126,6 +160,14 @@
   background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
   transform-origin: center center;
   transition: transform 0.08s ease-out;
+  z-index: 1;
+}
+
+/* Enhanced visibility for light mode particles */
+.light-mode-particle {
+  mix-blend-mode: multiply;
+  filter: contrast(1.5);
+  background: radial-gradient(circle, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 70%);
 }
 
 .cursor {
@@ -138,7 +180,7 @@
 .cursor-outer {
   width: 40px;
   height: 40px;
-  border: 2px solid rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   transition: transform 0.15s ease-out;
 }
@@ -266,14 +308,17 @@
   border-color: hsl(var(--border));
 }
 
+/* Enhanced cursor visibility for light mode */
 .light-mode .cursor-outer {
-  border-color: rgba(0, 0, 0, 0.8);
+  border-color: rgba(0, 0, 0, 0.9);
   mix-blend-mode: normal;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .light-mode .cursor-inner {
   background-color: black;
   mix-blend-mode: normal;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }
 
 .light-mode button[aria-label="Toggle theme"] {
@@ -317,7 +362,7 @@ button[aria-label="Toggle theme"]:hover {
   background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
   -webkit-background-clip: text;
   color: transparent;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .light-mode .mouse-area {
@@ -352,13 +397,6 @@ button[aria-label="Toggle theme"]:hover {
   background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
 }
 
-/* Particle effects enhanced for light mode */
-.light-mode .particle {
-  mix-blend-mode: multiply;
-  filter: contrast(1.2);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
 /* Content Container */
 .content-container {
   max-width: 1200px;
@@ -367,7 +405,6 @@ button[aria-label="Toggle theme"]:hover {
   min-height: 100vh;
   position: relative;
   z-index: 1;
-  overflow-y: auto;
 }
 
 /* Code Display Container */

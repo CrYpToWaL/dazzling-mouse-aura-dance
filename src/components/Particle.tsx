@@ -72,8 +72,8 @@ const Particle: React.FC<ParticleProps> = ({
       const elapsedTime = Date.now() - startTime;
       const progress = Math.min(elapsedTime / lifetime, 1);
       
-      // Enhanced opacity for light mode
-      setOpacity(isLightMode ? (1 - progress) * 1.4 : 1 - progress);
+      // Enhanced opacity for light mode - make particles more visible
+      setOpacity(isLightMode ? (1 - progress) * 1.5 : 1 - progress);
       
       // Different animation patterns
       switch(pattern) {
@@ -132,15 +132,21 @@ const Particle: React.FC<ParticleProps> = ({
   const additionalStyles = {
     ...getShapeStyles(),
     transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${scale})`,
-    boxShadow: Math.random() > 0.5 ? 
-      `0 0 ${size/1.5}px ${color}, 0 0 ${size}px ${color}` : 
-      `0 0 ${size/2}px ${color}`,
-    filter: Math.random() > 0.6 ? `blur(${size/8}px)` : 'none',
+    boxShadow: isLightMode ?
+      // Enhanced glow effect for light mode
+      `0 0 ${size}px ${color}, 0 0 ${size*1.5}px ${color}` :
+      // Normal glow effect for dark mode
+      `0 0 ${size/1.5}px ${color}, 0 0 ${size}px ${color}`,
+    filter: Math.random() > 0.6 ? `blur(${isLightMode ? size/6 : size/8}px)` : 'none',
   };
   
   return (
     <div
-      className={cn("particle", color.includes("purple") ? "glow" : "")}
+      className={cn(
+        "particle", 
+        color.includes("purple") ? "glow" : "",
+        isLightMode ? "light-mode-particle" : ""
+      )}
       style={{
         left: `${position.x}px`,
         top: `${position.y}px`,
