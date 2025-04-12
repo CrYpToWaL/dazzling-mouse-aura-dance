@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Copy, Download, Loader2, Sparkles } from 'lucide-react';
+import { Copy, Download, Loader2, Sparkles, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import CursorPreview from './CursorPreview';
 
@@ -23,6 +23,17 @@ interface CursorConfig {
   trail: boolean;
   fadeTime: number;
   particleCount: number;
+  shape?: string;
+  bounceOffEdges?: boolean;
+  blurAmount?: number;
+  speed?: number;
+  glow?: boolean;
+  pulseEffect?: boolean;
+  rotation?: boolean;
+  spread?: number;
+  opacity?: number;
+  particleLifetime?: number;
+  interactionType?: string;
 }
 
 const PromptGenerator = () => {
@@ -30,6 +41,7 @@ const PromptGenerator = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [cursorCode, setCursorCode] = useState('');
   const [cursorConfig, setCursorConfig] = useState<CursorConfig | null>(null);
+  const [promptCopied, setPromptCopied] = useState(false);
   const { toast } = useToast();
 
   const handleGenerate = async () => {
@@ -44,65 +56,111 @@ const PromptGenerator = () => {
 
     setIsGenerating(true);
     
-    // Simulate generation process - this would connect to an API in the full version
+    // Advanced prompt analysis to match specific user requests
     setTimeout(() => {
-      // Analyze the prompt to determine cursor settings
-      let colors = [];
-      let size = 8;
-      let fadeTime = 800;
-      let particleCount = 5;
-      
-      // Process prompt keywords for more accurate cursor generation
       const promptLower = prompt.toLowerCase();
       
-      // Color selection based on prompt
-      if (promptLower.includes('purple')) {
-        colors = ["#8B5CF6", "#D946EF"];
-      } else if (promptLower.includes('rainbow') || promptLower.includes('colorful')) {
-        colors = ["#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6"];
-      } else if (promptLower.includes('neon') && promptLower.includes('cyberpunk')) {
-        colors = ["#10B981", "#3B82F6", "#EC4899"];
-      } else if (promptLower.includes('minimal') || promptLower.includes('white')) {
-        colors = ["#FFFFFF", "#E5E7EB"];
-      } else if (promptLower.includes('electric')) {
-        colors = ["#3B82F6", "#8B5CF6", "#EC4899"];
-      } else {
-        colors = ["#8B5CF6", "#EC4899"]; // default
-      }
-      
-      // Size based on prompt
-      if (promptLower.includes('minimal') || promptLower.includes('small')) {
-        size = 4;
-      } else if (promptLower.includes('large')) {
-        size = 12;
-      }
-      
-      // Fade time based on prompt
-      if (promptLower.includes('slow')) {
-        fadeTime = 1200;
-      } else if (promptLower.includes('fast')) {
-        fadeTime = 400;
-      }
-      
-      // Particle count based on prompt
-      if (promptLower.includes('minimal')) {
-        particleCount = 2;
-      } else if (promptLower.includes('many') || promptLower.includes('lots')) {
-        particleCount = 8;
-      }
-      
-      const newConfig: CursorConfig = {
+      // Base configuration
+      let newConfig: CursorConfig = {
         type: "particle",
-        colors: colors,
-        size: size,
+        colors: ["#8B5CF6", "#D946EF"],
+        size: 8,
         trail: true,
-        fadeTime: fadeTime,
-        particleCount: particleCount
+        fadeTime: 800,
+        particleCount: 5,
+        shape: "circle",
+        bounceOffEdges: false,
+        blurAmount: 0,
+        speed: 1,
+        glow: false,
+        pulseEffect: false,
+        rotation: false,
+        spread: 5,
+        opacity: 0.8,
+        particleLifetime: 800,
+        interactionType: "follow"
       };
+      
+      // Process complex prompt features
+      // Particle type/shape
+      if (promptLower.includes('pixel') || promptLower.includes('square')) {
+        newConfig.shape = 'square';
+      } else if (promptLower.includes('star')) {
+        newConfig.shape = 'star';
+      } else if (promptLower.includes('triangle')) {
+        newConfig.shape = 'triangle';
+      } else if (promptLower.includes('line') || promptLower.includes('trail')) {
+        newConfig.shape = 'line';
+        newConfig.trail = true;
+      }
+      
+      // Colors
+      if (promptLower.includes('purple')) {
+        newConfig.colors = ["#8B5CF6", "#D946EF"];
+      } else if (promptLower.includes('rainbow') || promptLower.includes('colorful')) {
+        newConfig.colors = ["#EF4444", "#F59E0B", "#10B981", "#3B82F6", "#8B5CF6"];
+      } else if (promptLower.includes('neon') && promptLower.includes('cyberpunk')) {
+        newConfig.colors = ["#10B981", "#3B82F6", "#EC4899"];
+        newConfig.glow = true;
+        newConfig.blurAmount = 5;
+      } else if (promptLower.includes('minimal') || promptLower.includes('white')) {
+        newConfig.colors = ["#FFFFFF", "#E5E7EB"];
+      } else if (promptLower.includes('electric')) {
+        newConfig.colors = ["#3B82F6", "#8B5CF6", "#EC4899"];
+        newConfig.glow = true;
+      } else if (promptLower.includes('fire') || promptLower.includes('flame')) {
+        newConfig.colors = ["#F97316", "#EF4444", "#F59E0B"];
+        newConfig.pulseEffect = true;
+      } else if (promptLower.includes('ice') || promptLower.includes('cold')) {
+        newConfig.colors = ["#BFDBFE", "#93C5FD", "#60A5FA"];
+        newConfig.blurAmount = 2;
+      }
+      
+      // Size
+      if (promptLower.includes('minimal') || promptLower.includes('small')) {
+        newConfig.size = 4;
+      } else if (promptLower.includes('large') || promptLower.includes('big')) {
+        newConfig.size = 12;
+      }
+      
+      // Animation and behavior
+      if (promptLower.includes('bounce')) {
+        newConfig.bounceOffEdges = true;
+        newConfig.speed = 1.5;
+      }
+      
+      if (promptLower.includes('fade') || promptLower.includes('trail')) {
+        newConfig.fadeTime = promptLower.includes('slow') ? 1200 : 600;
+        newConfig.trail = true;
+      }
+      
+      if (promptLower.includes('glow') || promptLower.includes('glowing')) {
+        newConfig.glow = true;
+        newConfig.blurAmount = 3;
+      }
+      
+      if (promptLower.includes('pulse')) {
+        newConfig.pulseEffect = true;
+      }
+      
+      if (promptLower.includes('spin') || promptLower.includes('rotating')) {
+        newConfig.rotation = true;
+      }
+      
+      // Particle count
+      if (promptLower.includes('minimal')) {
+        newConfig.particleCount = 2;
+      } else if (promptLower.includes('many') || promptLower.includes('lots')) {
+        newConfig.particleCount = 8;
+      } else if (promptLower.includes('dust') || promptLower.includes('sparkly')) {
+        newConfig.particleCount = 12;
+        newConfig.size = 3;
+        newConfig.spread = 10;
+      }
       
       setCursorConfig(newConfig);
       
-      // Generate code representation
+      // Generate detailed code representation
       const codeString = `
 // Generated Cursor Effect
 // Based on prompt: "${prompt}"
@@ -112,10 +170,116 @@ const cursorEffect = {
   size: ${newConfig.size},
   trail: ${newConfig.trail},
   fadeTime: ${newConfig.fadeTime},
-  particleCount: ${newConfig.particleCount}
+  particleCount: ${newConfig.particleCount},
+  shape: "${newConfig.shape}",
+  bounceOffEdges: ${newConfig.bounceOffEdges},
+  blurAmount: ${newConfig.blurAmount},
+  speed: ${newConfig.speed},
+  glow: ${newConfig.glow},
+  pulseEffect: ${newConfig.pulseEffect},
+  rotation: ${newConfig.rotation},
+  spread: ${newConfig.spread},
+  opacity: ${newConfig.opacity},
+  particleLifetime: ${newConfig.particleLifetime},
+  interactionType: "${newConfig.interactionType}"
 };
 
+// Implementation
+function createCursorEffect(config) {
+  const cursor = document.createElement('div');
+  cursor.className = 'custom-cursor';
+  document.body.appendChild(cursor);
+  
+  // Track mouse position
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    
+    // Position main cursor
+    cursor.style.left = mouseX + 'px';
+    cursor.style.top = mouseY + 'px';
+    
+    // Create particle based on config
+    if (Math.random() < 0.3) { 
+      createParticle(mouseX, mouseY, config);
+    }
+  });
+  
+  function createParticle(x, y, config) {
+    const particle = document.createElement('div');
+    particle.className = 'cursor-particle';
+    
+    // Apply styles based on config
+    particle.style.width = config.size + 'px';
+    particle.style.height = config.size + 'px';
+    particle.style.backgroundColor = config.colors[Math.floor(Math.random() * config.colors.length)];
+    particle.style.position = 'absolute';
+    particle.style.borderRadius = config.shape === 'circle' ? '50%' : config.shape === 'square' ? '0' : '30%';
+    
+    if (config.glow) {
+      particle.style.filter = \`blur(\${config.blurAmount}px)\`;
+      particle.style.boxShadow = \`0 0 \${config.blurAmount}px \${particle.style.backgroundColor}\`;
+    }
+    
+    document.body.appendChild(particle);
+    
+    // Random offset based on spread
+    const offsetX = (Math.random() - 0.5) * config.spread;
+    const offsetY = (Math.random() - 0.5) * config.spread;
+    
+    particle.style.left = (x + offsetX) + 'px';
+    particle.style.top = (y + offsetY) + 'px';
+    
+    // Animation logic
+    let opacityValue = config.opacity;
+    let particleSize = config.size;
+    let currentX = x + offsetX;
+    let currentY = y + offsetY;
+    let angle = Math.random() * 360;
+    let velocityX = (Math.random() - 0.5) * config.speed;
+    let velocityY = (Math.random() - 0.5) * config.speed;
+    
+    const animateParticle = () => {
+      opacityValue -= config.opacity / (config.particleLifetime / 16);
+      particle.style.opacity = opacityValue.toString();
+      
+      if (config.pulseEffect) {
+        particleSize = config.size * (1 + 0.2 * Math.sin(Date.now() / 100));
+        particle.style.width = particleSize + 'px';
+        particle.style.height = particleSize + 'px';
+      }
+      
+      if (config.rotation) {
+        angle += 2;
+        particle.style.transform = \`rotate(\${angle}deg)\`;
+      }
+      
+      if (config.bounceOffEdges) {
+        currentX += velocityX;
+        currentY += velocityY;
+        
+        if (currentX <= 0 || currentX >= window.innerWidth) velocityX = -velocityX;
+        if (currentY <= 0 || currentY >= window.innerHeight) velocityY = -velocityY;
+        
+        particle.style.left = currentX + 'px';
+        particle.style.top = currentY + 'px';
+      }
+      
+      if (opacityValue > 0) {
+        requestAnimationFrame(animateParticle);
+      } else {
+        document.body.removeChild(particle);
+      }
+    };
+    
+    requestAnimationFrame(animateParticle);
+  }
+}
+
+// Usage
 export default cursorEffect;
+// Initialize with: createCursorEffect(cursorEffect);
       `;
       
       setCursorCode(codeString);
@@ -137,6 +301,20 @@ export default cursorEffect;
     toast({
       title: "Copied to clipboard!",
       description: "The code has been copied to your clipboard."
+    });
+  };
+  
+  const copyExample = (example: string) => {
+    setPrompt(example);
+    setPromptCopied(true);
+    
+    setTimeout(() => {
+      setPromptCopied(false);
+    }, 2000);
+    
+    toast({
+      title: "Example copied!",
+      description: "Example prompt added to your input."
     });
   };
 
@@ -167,9 +345,12 @@ export default cursorEffect;
               {examplePrompts.map((example, index) => (
                 <button
                   key={index}
-                  onClick={() => handleTryExample(example)}
-                  className="text-xs px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors duration-200 transform hover:scale-105 active:scale-95"
+                  onClick={() => copyExample(example)}
+                  className="text-xs px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-full transition-colors duration-200 transform hover:scale-105 active:scale-95 relative group"
                 >
+                  <span className="absolute inset-0 flex items-center justify-center bg-primary/80 text-white rounded-full scale-0 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-200 -z-10">
+                    <CheckCircle2 className="h-3 w-3" />
+                  </span>
                   {example}
                 </button>
               ))}

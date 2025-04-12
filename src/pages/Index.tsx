@@ -32,10 +32,10 @@ const Index = () => {
       <MouseEffect />
       <div className="min-h-screen flex flex-col items-center justify-start pt-12 md:pt-20 relative z-10">
         <Button 
-          variant="ghost" 
+          variant="outline" 
           size="icon" 
           onClick={toggleTheme}
-          className="absolute top-4 right-4 rounded-full hover:bg-primary/20"
+          className="fixed top-4 right-4 z-50 rounded-full w-10 h-10 flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
           aria-label="Toggle theme"
         >
           {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
