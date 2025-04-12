@@ -60,7 +60,7 @@ const CursorPreview: React.FC<CursorPreviewProps> = ({ config }) => {
   return (
     <Card className="border border-border bg-card/80 backdrop-blur-sm shadow-lg transition-all duration-300 hover:shadow-primary/10">
       <CardHeader>
-        <CardTitle className="text-xl font-medium">Preview Your Cursor</CardTitle>
+        <CardTitle className="text-xl font-medium text-center">Preview Your Cursor</CardTitle>
       </CardHeader>
       <CardContent>
         <div 
@@ -103,7 +103,7 @@ const CursorPreview: React.FC<CursorPreviewProps> = ({ config }) => {
           
           {!config && (
             <div className="flex items-center justify-center h-full text-gray-400">
-              <span className="animate-pulse">Generate a cursor to see preview</span>
+              <span className="animate-pulse text-center">Generate a cursor to see preview</span>
             </div>
           )}
         </div>
