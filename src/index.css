@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   :root {
     --background: 260 50% 3%;
@@ -77,7 +79,7 @@
     padding: 0;
     height: 100vh;
     width: 100vw;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     text-align: center;
   }
 
@@ -92,18 +94,22 @@
   
   h1, h2, h3, h4, h5, h6 {
     @apply font-bold tracking-tight text-center;
+    font-family: 'Poppins', sans-serif;
   }
   
   button, a {
     @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary;
+    font-family: 'Poppins', sans-serif;
   }
   
   textarea::placeholder {
     @apply text-center;
+    font-family: 'Poppins', sans-serif;
   }
   
   textarea {
     text-align: center;
+    font-family: 'Poppins', sans-serif;
   }
 }
 
@@ -248,20 +254,26 @@
   color-scheme: light;
 }
 
-.light-mode h1.text-white,
-.light-mode p.text-gray-200,
+.light-mode body {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.light-mode h1,
+.light-mode p,
+.light-mode .text-gray-200,
 .light-mode .text-white {
   color: hsl(var(--foreground));
 }
 
-/* Fixed the problematic selectors by properly escaping the forward slashes */
 .light-mode .bg-card\/80 {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
 .light-mode .bg-background\/30,
 .light-mode .bg-background\/50 {
-  background-color: rgba(240, 240, 245, 0.7);
+  background-color: rgba(240, 240, 245, 0.8);
 }
 
 .light-mode .text-gray-400 {
@@ -282,13 +294,19 @@
 
 .light-mode button[aria-label="Toggle theme"] {
   color: hsl(var(--foreground));
-  background-color: rgba(200, 200, 220, 0.2);
+  background-color: rgba(200, 200, 220, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Make theme toggle more visible */
 button[aria-label="Toggle theme"] {
   @apply bg-background/20 backdrop-blur-sm border border-white/10;
   transition: all 0.3s ease;
+  position: fixed !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 1000 !important;
 }
 
 button[aria-label="Toggle theme"]:hover {
@@ -296,7 +314,6 @@ button[aria-label="Toggle theme"]:hover {
   transform: rotate(15deg);
 }
 
-/* Make sure the page gradient in light mode covers the full page */
 .light-mode .bg-gradient {
   background: radial-gradient(circle at center, 
     hsl(var(--background)), 
@@ -311,7 +328,6 @@ button[aria-label="Toggle theme"]:hover {
   z-index: -1;
 }
 
-/* Fix light mode text gradient for heading */
 .light-mode h1.hoverable.bg-clip-text.text-transparent {
   background-clip: text;
   background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
@@ -324,7 +340,6 @@ button[aria-label="Toggle theme"]:hover {
   background-color: transparent;
 }
 
-/* Ensure body and html have full height in light mode too */
 .light-mode body,
 .light-mode html,
 .light-mode #root {
@@ -332,4 +347,24 @@ button[aria-label="Toggle theme"]:hover {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.light-mode pre {
+  color: #1a1a1a;
+  background-color: rgba(240, 240, 245, 0.9);
+}
+
+.light-mode .rounded-md.bg-black\/80 {
+  background-color: rgba(245, 245, 250, 0.9);
+  color: #333;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .rounded-md.bg-black\/80 button {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #333;
+}
+
+.light-mode .rounded-md.bg-black\/80 pre {
+  color: #333;
 }
