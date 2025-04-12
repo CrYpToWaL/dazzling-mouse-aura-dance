@@ -42,7 +42,7 @@ const Index = () => {
         </Button>
         
         <div className="animate-fade-in text-center w-full mb-10">
-          <h1 className="text-5xl font-bold mb-3 text-center text-white hoverable bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Cursor Creator</h1>
+          <h1 className="text-5xl font-bold mb-3 text-center hoverable bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">Cursor Creator</h1>
           <p className="text-xl text-gray-200 mb-2 text-center hoverable">Design your perfect cursor effect through AI</p>
         </div>
         

@@ -244,12 +244,6 @@
   animation: scaleIn 0.3s ease-out forwards;
 }
 
-.light-mode .bg-gradient {
-  background: radial-gradient(circle at center, 
-    hsl(var(--background)), 
-    hsl(220, 20%, 90%) 70%);
-}
-
 .light-mode {
   color-scheme: light;
 }
@@ -300,4 +294,42 @@ button[aria-label="Toggle theme"] {
 button[aria-label="Toggle theme"]:hover {
   @apply bg-primary/20;
   transform: rotate(15deg);
+}
+
+/* Make sure the page gradient in light mode covers the full page */
+.light-mode .bg-gradient {
+  background: radial-gradient(circle at center, 
+    hsl(var(--background)), 
+    hsl(220, 20%, 90%) 70%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+}
+
+/* Fix light mode text gradient for heading */
+.light-mode h1.hoverable.bg-clip-text.text-transparent {
+  background-clip: text;
+  background-image: linear-gradient(to right, hsl(var(--primary)), hsl(var(--secondary)));
+  -webkit-background-clip: text;
+  color: transparent;
+  opacity: 0.9;
+}
+
+.light-mode .mouse-area {
+  background-color: transparent;
+}
+
+/* Ensure body and html have full height in light mode too */
+.light-mode body,
+.light-mode html,
+.light-mode #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
